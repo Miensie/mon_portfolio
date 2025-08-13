@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire d'appel à candidature - Process Day 2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-blue: #0a2559;
+            --secondary-blue: #4077bf;
+            --light-blue: #a3c6f7;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --gray: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--primary-blue);
+            background-image: url('/assets/process.jpg');
+            background-size:cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: rgba(10, 37, 89, 0.9);
+            color: var(--white);
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .header-title {
+            flex-grow: 1;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+        
+        .header h2 {
+            margin: 5px 0 0;
+            font-size: 18px;
+            font-weight: normal;
+        }
+        
+        .theme-banner {
+            background-color: rgba(10, 37, 89, 0.85);
+            color: var(--white);
+            padding: 10px 20px;
+            margin: 20px 0;
+            text-align: center;
+            border-radius: 5px;
+            font-weight: bold;
+            border: 2px solid var(--light-blue);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            border-bottom: 2px solid var(--secondary-blue);
+            padding-bottom: 10px;
+            color: var(--primary-blue);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--gray);
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary-blue);
+            outline: none;
+            box-shadow: 0 0 5px rgba(64, 119, 191, 0.5);
+        }
+        
+        .info-box {
+            background-color: rgba(163, 198, 247, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: var(--primary-blue);
+            border: 1px solid var(--secondary-blue);
+        }
+        
+        .info-box h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .team-members {
+            border: 1px solid var(--gray);
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .add-member {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .add-member:hover {
+            background-color: var(--secondary-blue);
+            color: var(--white);
+        }
+        
+        .submit-btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto 0;
+            transition: background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--secondary-blue);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .required {
+            color: red;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--white);
+            background-color: rgba(10, 37, 89, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            border: 6px solid var(--light-gray);
+            border-top: 6px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .message {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <img src="/assets/logoPROCESSDAY.png" alt="Process Day Logo" style="width: 160px;">
+            </div>
+            <div class="header-title">
+                <h1>PROCESS X CHEMISTS DAY 2025</h1>
+                <h2>Appel à candidature - CONCOURS PROJET</h2>
+            </div>
+        </div>
+        
+        <div class="theme-banner">
+            THÈME : Vers un modèle de consommation et de production responsable
+        </div>
+        
+        <div class="form-container">
+            <div class="info-box">
+                <h4>Informations importantes :</h4>
+                <ul>
+                    <li>Date limite de dépôt : <strong>10 Mai 2025</strong></li>
+                    <li>Première phase : <strong>Vote en ligne</strong></li>
+                    <li>Les équipes doivent être constituées d'au moins 2 personnes</li>
+                    <li>Cagnote de 100.000 F pour le vainqueur</li>
+                </ul>
+            </div>
+            
+            <div id="success-message" class="message success">
+                Votre candidature a été soumise avec succès ! Vous recevrez une confirmation par email.
+            </div>
+            
+            <div id="error-message" class="message error">
+                Une erreur est survenue lors de la soumission. Veuillez réessayer.
+            </div>
+            
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+                <p>Envoi de votre candidature en cours...</p>
+            </div>
+            
+            <form id="project-submission-form">
+                <div class="form-section">
+                    <h3>Informations de l'équipe</h3>
+                    <div class="form-group">
+                        <label for="team-name">Nom de l'équipe <span class="required">*</span></label>
+                        <input type="text" id="team-name" name="team-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="institution">École/Filière <span class="required">*</span></label>
+                        <input type="text" id="institution" name="institution" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Membres de l'équipe <span class="required">*</span> (minimum 2)</label>
+                        <div class="team-members" id="team-members-container">
+                            <div class="form-group">
+                                <label for="team-lead-name">Chef d'équipe - Nom complet <span class="required">*</span></label>
+                                <input type="text" id="team-lead-name" name="team-members[0][name]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="team-lead-email">Chef d'équipe - Email <span class="required">*</span></label>
+                                <input type="email" id="team-lead-email" name="team-members[0][email]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="team-lead-phone">Chef d'équipe - Téléphone <span class="required">*</span></label>
+                                <input type="tel" id="team-lead-phone" name="team-members[0][phone]" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="member-name-1">Membre 2 - Nom complet <span class="required">*</span></label>
+                                <input type="text" id="member-name-1" name="team-members[1][name]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="member-email-1">Membre 2 - Email <span class="required">*</span></label>
+                                <input type="email" id="member-email-1" name="team-members[1][email]" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="member-phone-1">Membre 2 - Téléphone</label>
+                                <input type="tel" id="member-phone-1" name="team-members[1][phone]">
+                            </div>
+                        </div>
+                        <button type="button" class="add-member" id="add-member-btn">+ Ajouter un membre</button>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Informations du projet</h3>
+                    <div class="form-group">
+                        <label for="project-title">Titre du projet <span class="required">*</span></label>
+                        <input type="text" id="project-title" name="project-title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-category">Catégorie du projet <span class="required">*</span></label>
+                        <select id="project-category" name="project-category" required>
+                            <option value="">Sélectionnez une catégorie</option>
+                            <option value="innovation">Innovation technologique</option>
+                            <option value="social">Impact social</option>
+                            <option value="environment">Environnement</option>
+                            <option value="energy">Énergie</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-summary">Résumé du projet <span class="required">*</span> (max 300 mots)</label>
+                        <textarea id="project-summary" name="project-summary" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-description">Description détaillée <span class="required">*</span></label>
+                        <textarea id="project-description" name="project-description" rows="10" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="project-relevance">Pertinence par rapport au thème <span class="required">*</span></label>
+                        <textarea id="project-relevance" name="project-relevance" rows="5" required placeholder="Expliquez comment votre projet répond au thème : Vers un modèle de consommation et de production responsable"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Documents à joindre</h3>
+                    <div class="form-group">
+                        <label for="presentation-file">Présentation du projet (Vidéo, max 1 min) <span class="required">*</span></label>
+                        <input type="file" id="presentation-file" name="presentation-file" accept="*" required>
+                    </div>
+                    
+                </div>
+                
+                
+                <button type="submit" class="submit-btn">Soumettre ma candidature</button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            <p>PROCESS X CHEMISTS DAY 2025 - ODD 12 : Consommation et production responsable</p>
+            <p>Pour toute question, contactez AE-IGCP</p>
+        </div>
+    </div>
+    
+    <script>
+        // Ajout de nouveaux membres
+        document.getElementById('add-member-btn').addEventListener('click', function() {
+            const container = document.getElementById('team-members-container');
+            const memberCount = container.querySelectorAll('[id^="member-name-"]').length + 1;
+            
+            const newMemberHtml = `
+                <div class="form-group">
+                    <label for="member-name-${memberCount}">Membre ${memberCount+1} - Nom complet</label>
+                    <input type="text" id="member-name-${memberCount}" name="team-members[${memberCount+1}][name]">
+                </div>
+                <div class="form-group">
+                    <label for="member-email-${memberCount}">Membre ${memberCount+1} - Email</label>
+                    <input type="email" id="member-email-${memberCount}" name="team-members[${memberCount+1}][email]">
+                </div>
+                <div class="form-group">
+                    <label for="member-phone-${memberCount}">Membre ${memberCount+1} - Téléphone</label>
+                    <input type="tel" id="member-phone-${memberCount}" name="team-members[${memberCount+1}][phone]">
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', newMemberHtml);
+        });
+        // Configuration de Supabase
+        const SUPABASE_URL = 'https://nsaverhgsuntugbqlxop.supabase.co'; // À remplacer par votre URL Supabase
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zYXZlcmhnc3VudHVnYnFseG9wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU3MjEwMDMsImV4cCI6MjA2MTI5NzAwM30.711n5UjzSseq_DDIlu6t_gZ23mgLeGD7GqiAYtAw20A'; // À remplacer par votre clé API Supabase
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            db: {
+                schema: 'public'
+            }
+            });
+                    
+        
+        
+        // Soumission du formulaire
+        document.getElementById('project-submission-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loadingDiv = document.getElementById('loading');
+            const successMsg = document.getElementById('success-message');
+            const errorMsg = document.getElementById('error-message');
+            
+            // Cacher les messages précédents
+            successMsg.style.display = 'none';
+            errorMsg.style.display = 'none';
+            
+            // Afficher le loader
+            loadingDiv.style.display = 'block';
+            
+            try {
+                // Récupérer les données du formulaire
+                const formData = new FormData(this);
+                
+                // Préparer les données pour Supabase
+                const teamData = {
+                    team_name: formData.get('team-name'),
+                    institution: formData.get('institution'),
+                    project_title: formData.get('project-title'),
+                    project_category: formData.get('project-category'),
+                    project_summary: formData.get('project-summary'),
+                    project_description: formData.get('project-description'),
+                    project_relevance: formData.get('project-relevance'),
+                    created_at: new Date()
+                };
+                
+                // Insérer les données de l'équipe
+                const { data: team, error: teamError } = await supabaseClient
+                    .from('teams')
+                    .insert([teamData])
+                    .select();
+                
+                if (teamError) throw teamError;
+                
+                const teamId = team[0].id;
+                
+                // Récupérer les membres de l'équipe
+                const membersContainer = document.getElementById('team-members-container');
+                const memberNameInputs = membersContainer.querySelectorAll('input[name$="[name]"]');
+                
+                // Enregistrer chaque membre
+                for (let i = 0; i < memberNameInputs.length; i++) {
+                    const nameInput = memberNameInputs[i];
+                    const index = nameInput.name.match(/\[(\d+)\]/)[1];
+                    const emailInput = membersContainer.querySelector(`input[name="team-members[${index}][email]"]`);
+                    const phoneInput = membersContainer.querySelector(`input[name="team-members[${index}][phone]"]`);
+                    
+                    if (nameInput.value && emailInput.value) {
+                        const memberData = {
+                            team_id: teamId,
+                            name: nameInput.value,
+                            email: emailInput.value,
+                            phone: phoneInput ? phoneInput.value : '',
+                            is_leader: i === 0 // Le premier membre est le chef d'équipe
+                        };
+                        
+                        const { error: memberError } = await supabaseClient
+                            .from('team_members')
+                            .insert([memberData]);
+                        
+                        if (memberError) throw memberError;
+                    }
+                }
+                
+                // Gérer le téléchargement des fichiers
+                const presentationFile = document.getElementById('presentation-file').files[0];
+                if (presentationFile) {
+                    const filePath = `${teamId}-${presentationFile.name}`;
+                    const { error: uploadError } = await supabaseClient.storage
+                        .from('projectfiles')
+                        .upload(filePath, presentationFile);
+                    
+                    if (uploadError) throw uploadError;
+                    
+                    // Enregistrer le lien du fichier dans la base de données
+                    const { error: fileError } = await supabaseClient
+                        .from('project_files')
+                        .insert([{
+                            team_id: teamId,
+                            file_path: filePath,
+                            file_name: presentationFile.name,
+                            file_type: 'presentation'
+                        }]);
+                    
+                    if (fileError) throw fileError;
+                }
+                
+        
+                
+                // Succès
+                loadingDiv.style.display = 'none';
+                successMsg.style.display = 'block';
+                
+                // Réinitialiser le formulaire
+                this.reset();
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                loadingDiv.style.display = 'none';
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = `Une erreur est survenue: ${error.message || 'Veuillez réessayer.'}`;
+            }
+        });
+    </script>
+</body>
+</html>
